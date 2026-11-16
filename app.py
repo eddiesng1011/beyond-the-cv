@@ -41,7 +41,7 @@ CONTACT = setting("CONTACT_EMAIL")
 
 QPAGE0 = 3                      # first question page
 PROFILE = QPAGE0 + len(PAGES)   # profile step
-STEP_NAMES = ["Welcome", "Your CV", "Your skills"] + [f"Beyond the CV, page {i + 1} of {len(PAGES)}" for i in range(len(PAGES))] + ["Your profile"]
+STEP_NAMES = ["Welcome", "Your CV", "Your skills"] + [f"Page {i + 1} of {len(PAGES)}" for i in range(len(PAGES))] + ["Your profile"]
 
 ss = st.session_state
 ss.setdefault("step", 0)
