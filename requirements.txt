@@ -1,5 +1,6 @@
-streamlit>=1.40
+streamlit>=1.66
 anthropic>=0.60
 pandas
 pypdf
 python-docx
+reportlab

@@ -1,0 +1,197 @@
+"""The beyond-the-CV questions, 14 categories over 4 pages.
+
+Edit wording here without touching app.py.
+kind: "one" = pick one (radio), "multi" = tick boxes.
+say: for "one" questions, the first-person sentence used in the profile (None = leave out).
+lead: for "multi" questions, the label used in the profile.
+"""
+
+PAGES = [
+    {"title": "Your direction", "questions": ["step_back", "interests", "activities", "strengths"]},
+    {"title": "How you would like to work", "questions": ["responsibilities", "arrangements", "pay", "days", "shifts", "schedule"]},
+    {"title": "Practical details", "questions": ["start", "location", "industry", "ai"]},
+    {"title": "Learning and motivation", "questions": ["learning", "learning_support", "outside", "motivation"]},
+]
+
+Q = {
+    "step_back": {
+        "num": 1, "category": "Taking a step back", "kind": "one",
+        "label": "Would you consider a role with less seniority or management responsibility than your previous role?",
+        "options": {
+            "Yes, this is what I am looking for": "I am looking for a role with less seniority or management responsibility than before.",
+            "Yes, if the work interests me": "I would take a role with less seniority if the work interests me.",
+            "Yes, depending on the responsibilities and employment terms": "I would consider a role with less seniority, depending on the responsibilities and terms.",
+            "I prefer a role at a similar level": "I am looking for a role at a similar level to my last one.",
+            "I am looking for greater responsibility": "I am looking for greater responsibility than in my last role.",
+            "I would like to discuss the opportunity first": "I am open to discussing the level of the role.",
+            "Not applicable": None,
+        },
+        "text": ("In a sentence, why? (optional)", "e.g. I would rather mentor than manage again"),
+    },
+    "interests": {
+        "num": 2, "category": "Work interests", "kind": "multi", "max": 3,
+        "label": "Which kinds of work would you like to explore? Select up to three.",
+        "options": ["Administration and coordination", "Customer service and relationship support",
+                    "Operations and logistics", "Sales and business development", "Finance and bookkeeping",
+                    "Human resources and people support", "Training, coaching and mentoring",
+                    "Technical or specialist work", "Project work and consulting",
+                    "Events and community programmes", "Retail and hospitality",
+                    "Open to suggestions based on my experience"],
+        "lead": "Kinds of work I would like to explore",
+    },
+    "activities": {
+        "num": 3, "category": "Contribution", "kind": "multi", "max": 5,
+        "label": "Which activities would you feel confident doing in your next role? Select up to five.",
+        "options": ["Organising work and keeping things on track", "Solving operational problems",
+                    "Helping customers and resolving concerns", "Building relationships and developing business",
+                    "Working with numbers and records", "Teaching or explaining things",
+                    "Coaching and supporting colleagues", "Managing projects", "Leading a team",
+                    "Improving processes", "Providing technical or specialist advice", "Creating or making things"],
+        "lead": "Activities I feel confident doing",
+    },
+    "strengths": {"num": 3, "category": None, "kind": "special", "optional": True,
+                  "label": "Which one or two strengths should your next employer know about?"},
+    "responsibilities": {
+        "num": 4, "category": "Responsibilities", "kind": "multi",
+        "label": "What responsibilities would you prefer in your next role? Select all that apply.",
+        "options": ["Delivering tasks without managing people", "Coordinating work or projects",
+                    "Guiding or mentoring others", "Supervising a small team", "Managing a team or department",
+                    "Advising others as a specialist", "Open to discussing different responsibilities"],
+        "lead": "Responsibilities I would prefer",
+    },
+    "arrangements": {
+        "num": 5, "category": "Employment arrangement", "kind": "multi",
+        "label": "Which working arrangements would you consider? Select all that apply.",
+        "options": ["Permanent full-time employment", "Permanent part-time employment",
+                    "Employment for a fixed period", "Temporary or occasional assignments",
+                    "A project with an agreed deliverable", "Consulting or advisory work", "Job sharing",
+                    "Open to discussing the arrangement"],
+        "lead": "Working arrangements I would consider",
+    },
+    "pay": {
+        "num": 6, "category": "Pay flexibility", "kind": "one",
+        "label": "Would you consider a salary below your last-drawn salary for a suitable role?",
+        "options": {
+            "Yes, for a role that fits my current preferences": "I would accept a salary below my last-drawn salary for a role that fits my preferences.",
+            "Possibly, depending on the overall employment package": "I may accept a lower salary, depending on the overall package.",
+            "I prefer a salary similar to my last-drawn salary": "I am looking for a salary similar to my last-drawn salary.",
+            "I would like to understand the role before discussing pay": "I would like to understand the role before discussing pay.",
+            "Prefer not to say": None,
+        },
+    },
+    "days": {
+        "num": 7, "category": "Time availability", "kind": "one",
+        "label": "How many days a week would you prefer to work?",
+        "options": {
+            "One day": "I would prefer to work one day a week.",
+            "Two days": "I would prefer to work two days a week.",
+            "Three days": "I would prefer to work three days a week.",
+            "Four days": "I would prefer to work four days a week.",
+            "Five days": "I would prefer to work five days a week.",
+            "Five and a half days (Saturday half day)": "I can work five and a half days a week.",
+            "Flexible": "I am flexible on the number of days I work.",
+            "Not sure yet": None,
+        },
+    },
+    "shifts": {
+        "num": 7, "category": None, "kind": "one", "optional": True,
+        "label": "Would you consider shift work or weekend work?",
+        "options": {
+            "Yes": "I am open to shift or weekend work.",
+            "Occasionally": "I can do shift or weekend work occasionally.",
+            "Yes, with advance notice": "I can do shift or weekend work with advance notice.",
+            "No": "I prefer not to do shift or weekend work.",
+            "Open to discussion": "I am open to discussing shift or weekend work.",
+        },
+    },
+    "schedule": {
+        "num": 7, "category": None, "kind": "one", "optional": True,
+        "label": "How predictable should your work schedule be?",
+        "options": {
+            "The same schedule each week": "I prefer the same schedule each week.",
+            "Some variation is fine": "Some variation in my schedule is fine.",
+            "Fully flexible": "My schedule can be fully flexible.",
+            "Open to discussion": "I am open to discussing my schedule.",
+        },
+    },
+    "start": {
+        "num": 8, "category": "Starting work", "kind": "one",
+        "label": "When would you be available to begin?",
+        "options": {
+            "Immediately": "I can start immediately.",
+            "Within two weeks": "I can start within two weeks.",
+            "Within one month": "I can start within one month.",
+            "Within two to three months": "I can start within two to three months.",
+            "I need three months or more": "I would need three months or more before starting.",
+        },
+    },
+    "location": {
+        "num": 9, "category": "Work location", "kind": "multi",
+        "label": "Which work locations would suit you? Select all that apply.",
+        "options": ["At the employer's workplace", "Mainly from home", "A combination of home and workplace",
+                    "Open to discussion"],
+        "lead": "Work locations that suit me",
+    },
+    "industry": {
+        "num": 10, "category": "Industry openness", "kind": "one",
+        "label": "In which industry would you consider working?",
+        "options": {
+            "Mainly within industries I know": "I would like to stay mainly in industries I know.",
+            "In a related industry": "I am open to a related industry.",
+            "In a different industry where my skills are useful": "I am open to a different industry where my skills are useful.",
+            "Open to any industry with suitable work": "I am open to any industry with suitable work.",
+            "Not sure yet": None,
+        },
+    },
+    "ai": {
+        "num": 11, "category": "AI learning", "kind": "one",
+        "label": "Have you used AI tools such as ChatGPT, Claude, Copilot, Gemini, DeepSeek, Kimi or any other generative AI tools?",
+        "options": {
+            "Yes, I use them regularly": "I use AI tools regularly.",
+            "Yes, I have tried them a few times": "I have tried AI tools.",
+            "Not yet, but I would like to learn": "I am keen to learn AI tools.",
+            "Not for me": None,
+        },
+        "text": ("Give one example of what you used AI for (optional)", "e.g. drafting emails, planning a trip, summarising a report"),
+        "text_when": ["Yes, I use them regularly", "Yes, I have tried them a few times"],
+    },
+    "learning": {
+        "num": 12, "category": "Learning", "kind": "multi",
+        "label": "What would you be comfortable learning for a suitable role? Select all that apply.",
+        "options": ["New software or digital tools", "AI tools relevant to the work",
+                    "Processes used by a different employer", "Knowledge about a new industry",
+                    "A new practical or technical skill", "A required course or certification",
+                    "I would like to discuss the training and support first"],
+        "lead": "I am comfortable learning",
+    },
+    "learning_support": {
+        "num": 12, "category": None, "kind": "multi", "optional": True,
+        "label": "What helps you learn best? Select all that apply.",
+        "options": ["Demonstration followed by practice", "Written instructions", "Short videos",
+                    "A structured course", "Guidance from a colleague", "No particular preference"],
+        "lead": "I learn best through",
+        "skip_in_profile": ["No particular preference"],
+    },
+    "outside": {
+        "num": 13, "category": "Experience outside paid work", "kind": "multi",
+        "label": "Where else have you developed skills that could be useful at work? Select all that apply.",
+        "options": ["Volunteering", "Community or residents' activities", "Clubs, associations or committees",
+                    "Teaching, tutoring or mentoring", "Organising events", "Caring for or supporting others",
+                    "Running a small business or side project", "Hobbies, crafts or personal projects",
+                    "Nothing I want to include", "Something else (please describe)"],
+        "lead": "Skills from outside paid work",
+        "skip_in_profile": ["Nothing I want to include", "Something else (please describe)"],
+        "text": ("Please describe", "e.g. I teach Excel to seniors at my community centre"),
+        "text_when": ["Something else (please describe)"],
+    },
+    "motivation": {
+        "num": 14, "category": "Motivation", "kind": "multi", "max": 3,
+        "label": "What would make your next role worthwhile? Select up to three.",
+        "options": ["Earning a regular income", "Using my experience and skills", "Doing work I enjoy",
+                    "Staying active, engaged and connected", "Learning something new", "Helping others",
+                    "Meeting people and working with a team", "Contributing to a cause or community",
+                    "Building a longer-term career"],
+        "lead": "What would make my next role worthwhile",
+        "text": ("In one sentence, what do you want your next role to give you? (optional)", ""),
+    },
+}

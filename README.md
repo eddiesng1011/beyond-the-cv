@@ -1,6 +1,6 @@
-# Beyond the CV: Prototype 1
+# Beyond the CV: Prototype 2
 
-A senior uploads a CV. The app suggests skills from a fixed list. The senior confirms them, then answers questions a CV never asks. The app shows a profile that leads with those answers.
+A senior uploads a CV or LinkedIn PDF. The app suggests skills from a fixed list. The senior confirms them, then answers 14 categories of questions a CV never asks, over 4 pages. The app produces a one-page PDF profile that leads with those answers.
 
 ## Run it on your Mac
 
@@ -16,6 +16,26 @@ streamlit run app.py
 
 3. Your browser opens at http://localhost:8501.
 
+## Run it on Windows
+
+1. Install Python 3.11 or later from python.org. On the first installer screen, tick "Add python.exe to PATH".
+2. Unzip this folder, then open PowerShell in it (Shift + right-click inside the folder, "Open PowerShell window here").
+3. Run:
+
+```
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+If PowerShell refuses to run the activate script, run this once, then try again:
+`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+
+## Next time
+
+Open Terminal or PowerShell in the folder, activate the environment again (the second line above), then run `streamlit run app.py`. Press Control + C to stop it.
+
 ## Demo mode or AI mode
 
 - **Without an API key** the app runs in demo mode. It matches skills by keywords. Good enough for Thursday.
@@ -29,17 +49,28 @@ streamlit run app.py
 2. At share.streamlit.io, choose "Create app" and pick the repository and `app.py`.
 3. In the app's Settings, under Secrets, paste the `ANTHROPIC_API_KEY` line.
 
+## Settings (Streamlit app settings, under Secrets)
+
+```
+ANTHROPIC_API_KEY = "sk-ant-..."     # switches on AI reading
+HOST_NAME = "the Beyond the CV project team"   # who the consent screen names
+CONTACT_EMAIL = "someone@example.org"          # who users contact about their data
+```
+All three are optional. Without them the app runs in demo mode with the default host name.
+
 ## Files
 
 | File | What it does |
 |---|---|
-| `app.py` | The five screens: welcome and consent, CV upload, skills, beyond-the-CV questions, profile |
+| `app.py` | The screens: consent, CV upload, skills, 4 question pages, profile and PDF |
+| `questions.py` | All question wording and options. Edit here to change a question |
+| `profile_builder.py` | Turns answers into profile sentences and the one-page PDF |
 | `cv_reader.py` | Reads PDF, Word or text CVs. AI mode and demo mode |
-| `skills.csv` | The drop-down list: 50 skills in 8 themes. Edit freely |
+| `skills.csv` | The skills list: 50 skills in 8 themes |
 | `samples/sample_cv.docx` | A fictional CV for demos |
 
-## Next, for Prototype 2 (12 Nov)
+## Next, after Prototype 2
 
-- One-page PDF profile to download and share
-- Save profiles (with consent) so testers can come back
-- Align `skills.csv` with SkillsFuture Skills Framework names
+- AI-written narrative profile instead of the template wording
+- Optional job description upload, to show fit (Phase 2)
+- Save and return later (needs a database and login)
