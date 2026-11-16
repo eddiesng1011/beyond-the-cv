@@ -224,6 +224,11 @@ elif ss.step == 2:
         st.markdown(f"**In one line:** {cv['headline']}")
     st.markdown("These are skills you have **used**, based on your CV. Untick any that are wrong. Add any we missed. "
                 "Later pages ask what you would **like** to do next.")
+    if not ss.chosen_skills:
+        st.warning("We could not pick out skills from this CV. Please open the groups below and tick the skills "
+                   "you have used. They will appear on your profile under What I bring.")
+    elif cv.get("fallback"):
+        st.caption("Skills were matched by keywords for this CV. Please check them carefully.")
 
     chosen = []
     for theme, group in SKILLS.groupby("theme", sort=False):

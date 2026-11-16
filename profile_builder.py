@@ -23,6 +23,10 @@ def _multi(a, qid):
     items = [x for x in a.get(qid, []) if x not in skip]
     if not items:
         return None
+    if qid == "location" and items == ["Open to discussion"]:
+        return "I am open to discussing the work location."
+    if qid == "location":
+        items = [x for x in items if x != "Open to discussion"]
     return f"{Q[qid]['lead']}: " + "; ".join(_lc(x) for x in items) + "."
 
 
@@ -56,12 +60,12 @@ def build_sections(a: dict, cv: dict, skills: list) -> list:
     if outside:
         s3.append(outside)
     if a.get("outside_text") and "Something else (please describe)" in a.get("outside", []):
-        s3.append(f"Also: {a['outside_text']}")
+        s3.append(f"Also: {_lc(a['outside_text'].strip())}")
 
     s4 = []
     ai = _one(a, "ai")
     if ai:
-        s4.append(ai + (f" For example: {a['ai_text']}." if a.get("ai_text") else ""))
+        s4.append(ai + (f" For example: {_lc(a['ai_text'].strip().rstrip('.'))}." if a.get("ai_text") else ""))
     s4 += [x for x in (_multi(a, "learning"), _multi(a, "learning_support")) if x]
 
     s5 = [x for x in (_multi(a, "motivation"),) if x]

@@ -153,14 +153,47 @@ def ai_read(file_name: str, data: bytes, skills_df, api_key: str) -> dict:
     else:
         content = [{"type": "text", "text": prompt + "\n\nCV:\n" + extract_text(file_name, data)}]
 
-    msg = client.messages.create(model=MODEL, max_tokens=1500, messages=[{"role": "user", "content": content}])
+    msg = client.messages.create(model=MODEL, max_tokens=2500, messages=[{"role": "user", "content": content}])
     raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
-    match = re.search(r"\{.*\}", raw, re.S)
-    result = json.loads(match.group(0)) if match else {}
-    allowed = set(skills_df["skill"])
-    result["skills"] = [s for s in result.get("skills", []) if s in allowed]
+    result = _parse_json(raw)
+
+    # Match skill names loosely (case, spacing, "and" vs "&") so near-misses are not thrown away.
+    canon = {_norm(s): s for s in skills_df["skill"]}
+    matched = []
+    for s in result.get("skills", []) or []:
+        hit = canon.get(_norm(str(s)))
+        if hit and hit not in matched:
+            matched.append(hit)
+
+    # Safety net: if the AI returned no usable skills, fall back to keyword matching on the text.
+    if not matched:
+        try:
+            text = extract_text(file_name, data)
+            matched = demo_read(text, skills_df)["skills"] if text.strip() else []
+        except Exception:
+            matched = []
+        result["fallback"] = True
+
+    result["skills"] = matched
     result["mode"] = "ai"
+    result["ai_returned"] = bool(raw.strip())
     return result
+
+
+def _norm(s: str) -> str:
+    return re.sub(r"[^a-z]", "", s.lower().replace("&", "and"))
+
+
+def _parse_json(raw: str) -> dict:
+    """Pull the JSON object out of the reply, even if wrapped in ``` fences or extra words."""
+    raw = re.sub(r"```(?:json)?", "", raw)
+    start, end = raw.find("{"), raw.rfind("}")
+    if start == -1 or end <= start:
+        return {}
+    try:
+        return json.loads(raw[start:end + 1])
+    except json.JSONDecodeError:
+        return {}
 
 
 def read_cv(file_name: str, data: bytes, skills_df, api_key: str | None) -> dict:
