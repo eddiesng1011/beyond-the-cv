@@ -30,37 +30,53 @@ def _multi(a, qid):
     return f"{Q[qid]['lead']}: " + "; ".join(_lc(x) for x in items) + "."
 
 
+def _outside(a):
+    """Question 13 in one line, with the user's own detail in brackets where given."""
+    skip = set(Q["outside"].get("skip_in_profile", []))
+    detail = a.get("outside_detail", {})
+    parts = []
+    for opt in a.get("outside", []):
+        text = (detail.get(opt) or "").strip().rstrip(".")
+        if opt.startswith("Something else"):
+            if text:
+                parts.append(_lc(text))
+        elif opt not in skip:
+            parts.append(_lc(opt) + (f" ({_lc(text)})" if text else ""))
+    return f"{Q['outside']['lead']}: " + "; ".join(parts) + "." if parts else None
+
+
 def build_sections(a: dict, cv: dict, skills: list) -> list:
     """Return [(heading, [lines])]. Empty sections are dropped."""
     s1 = []
     step = _one(a, "step_back")
     if step:
         s1.append(step + (f' In my words: "{a["step_back_text"]}"' if a.get("step_back_text") else ""))
-    s1 += [x for x in (_multi(a, "responsibilities"), _one(a, "pay"), _multi(a, "arrangements"),
+    s1 += [x for x in (_one(a, "pay"), _multi(a, "arrangements"),
                        _one(a, "days"), _one(a, "shifts"), _one(a, "schedule"), _one(a, "start"),
                        _multi(a, "location"), _one(a, "industry")) if x]
 
-    s2 = [x for x in (_multi(a, "interests"), _multi(a, "activities")) if x]
-    strengths = list(a.get("strengths_pick", []))
-    if a.get("strengths_text"):
-        strengths.append(a["strengths_text"])
-    if strengths:
-        s2.append("Strengths I want you to know about: " + "; ".join(_lc(x) for x in strengths) + ".")
+    s2 = [x for x in (_multi(a, "interests"), _multi(a, "responsibilities")) if x]
 
     s3 = []
     if cv.get("headline"):
         s3.append(cv["headline"])
     if skills:
         s3.append("Skills: " + ", ".join(skills) + ".")
+    how = _multi(a, "activities")
+    if how:
+        s3.append(how)
+    strengths = list(a.get("strengths_pick", []))
+    if a.get("strengths_text"):
+        strengths.append(a["strengths_text"])
+    if strengths:
+        s3.append("Strengths I want you to know about: " + "; ".join(_lc(x.strip().rstrip(".")) for x in strengths) + ".")
     if cv.get("transferable_skills"):
         s3.append("Strengths across industries: " + "; ".join(cv["transferable_skills"]) + ".")
     for ach in cv.get("achievements", [])[:3]:
         s3.append(ach)
-    outside = _multi(a, "outside")
+    outside = _outside(a)
     if outside:
         s3.append(outside)
-    if a.get("outside_text") and "Something else (please describe)" in a.get("outside", []):
-        s3.append(f"Also: {_lc(a['outside_text'].strip())}")
 
     s4 = []
     ai = _one(a, "ai")

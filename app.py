@@ -125,12 +125,24 @@ def ask_strengths():
     picks = a.get("activities", [])
     st.markdown(f"**{Q['strengths']['label']} (optional)**")
     if picks:
-        ask_multi("strengths_pick", options=picks, max_sel=2, label="Choose from the activities you selected")
+        ask_multi("strengths_pick", options=picks, max_sel=2, label="Choose from your answers to question 3")
     else:
-        st.caption("Select some activities above first, or add a strength below.")
+        st.caption("Tick some answers in question 3 first, or add a strength below.")
         a["strengths_pick"] = []
     a["strengths_text"] = st.text_input("Add another strength", value=a.get("strengths_text", ""), key="w_strengths_text")
-    a["strengths_help"] = st.checkbox("I would like help identifying my strengths", value=a.get("strengths_help", False), key="w_strengths_help")
+
+
+def ask_outside_details():
+    """One optional box under each ticked option in question 13."""
+    hints = Q["outside"]["detail_hints"]
+    details = {}
+    for i, opt in enumerate(Q["outside"]["options"]):
+        if opt not in a.get("outside", []) or opt not in hints:
+            continue
+        label = "Something else: please describe" if opt.startswith("Something else") else f"{opt}: tell us more (optional)"
+        details[opt] = st.text_input(label, value=a.get("outside_detail", {}).get(opt, ""), key=f"w_outside_d_{i}",
+                                     placeholder=hints[opt], max_chars=100)
+    a["outside_detail"] = details
 
 
 def answered(qid):
@@ -158,6 +170,8 @@ if ss.step == 0:
                 "2. We suggest skills from it. You confirm them.\n"
                 f"3. You answer questions a CV never asks, over {len(PAGES)} short pages.\n"
                 "4. You get a one-page profile to download.")
+    st.markdown("**Please finish in one sitting. It takes about 12 minutes.** If your computer goes to sleep, "
+                "or you switch to another app on your phone, your answers may be lost.")
 
     st.markdown("### Your personal data")
     ai_line = ("- **AI reading:** your CV is sent to an AI service (Claude, by Anthropic) to suggest your skills.\n"
@@ -234,7 +248,9 @@ elif ss.step == 2:
     for theme, group in SKILLS.groupby("theme", sort=False):
         options = list(group["skill"])
         pre = [s for s in options if s in ss.chosen_skills]
-        with st.expander(f"{theme} ({len(pre)} selected)", expanded=bool(pre)):
+        # Count from the latest widget state, so the header updates on the same click.
+        count = len(ss.get(f"ms_{theme}", pre))
+        with st.expander(f"{theme} ({count} selected)", expanded=bool(pre) or count > 0):
             chosen += st.multiselect(theme, options, default=pre, key=f"ms_{theme}",
                                      label_visibility="collapsed", select_all=False)
     ss.chosen_skills = chosen
@@ -270,6 +286,8 @@ elif QPAGE0 <= ss.step < PROFILE:
             ask_one(qid)
         elif q["kind"] == "multi":
             ask_multi(qid)
+            if qid == "outside":
+                ask_outside_details()
         elif qid == "strengths":
             ask_strengths()
         ask_text(qid)
