@@ -8,10 +8,8 @@ from questions import Q
 
 
 def _lc(s: str) -> str:
-    """Lower-case the first letter for use mid-sentence, unless it starts an acronym (e.g. AI) or the word I."""
+    """Lower-case the first letter for use mid-sentence, unless it starts an acronym (e.g. AI)."""
     if len(s) > 1 and s[1].isupper():
-        return s
-    if s == "I" or s.startswith(("I ", "I'")):
         return s
     return s[:1].lower() + s[1:]
 
@@ -29,11 +27,7 @@ def _multi(a, qid):
         return "I am open to discussing the work location."
     if qid == "location":
         items = [x for x in items if x != "Open to discussion"]
-    # Options written as full sentences ("I would like to ...") stand on their own after the list.
-    said = [x.rstrip(".") + "." for x in items if x.startswith("I ")]
-    items = [x for x in items if not x.startswith("I ")]
-    out = f"{Q[qid]['lead']}: " + "; ".join(_lc(x) for x in items) + "." if items else ""
-    return " ".join([out] + said).strip()
+    return f"{Q[qid]['lead']}: " + "; ".join(_lc(x) for x in items) + "."
 
 
 def _outside(a):
@@ -133,7 +127,7 @@ def make_pdf(sections: list, name: str = "") -> bytes:
     body = ParagraphStyle("b", fontName=REG, bulletFontName=REG, fontSize=10, leading=13.2, leftIndent=9, bulletIndent=0,
                           spaceAfter=2.5)
 
-    story = [Paragraph("Profile of " + escape(name.strip() or "Candidate"), title),
+    story = [Paragraph(escape(name) if name else "Candidate profile", title),
              Paragraph("Beyond the CV: what my CV does not tell you. This profile accompanies my CV.", sub),
              Spacer(1, 4)]
     for h, lines in sections:
