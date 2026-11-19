@@ -51,7 +51,29 @@ ss.setdefault("chosen_skills", [])
 a = ss.answers
 
 
+def save_typing():
+    """Copy text boxes into the answers before changing page.
+
+    A text box only sends its value when the user presses Enter or clicks away.
+    If they click Next straight after typing, the value arrives with the click,
+    so we save it here, before the page (and its boxes) disappear.
+    """
+    ans = ss.answers
+    for k in list(ss.keys()):
+        v = ss[k]
+        if not isinstance(k, str) or not isinstance(v, str) or not k.startswith("w_"):
+            continue
+        if k in ("w_display_name", "w_strengths_text", "w_other_skills"):
+            ans[k[2:]] = v
+        elif k.startswith("w_outside_d_"):
+            opt = Q["outside"]["options"][int(k.rsplit("_", 1)[1])]
+            ans.setdefault("outside_detail", {})[opt] = v
+        elif k.endswith("_text"):
+            ans[k[2:]] = v
+
+
 def go(n):
+    save_typing()
     ss.step = n
 
 
@@ -301,6 +323,13 @@ elif QPAGE0 <= ss.step < PROFILE:
 
     missing = [Q[qid]["num"] for qid in page["questions"] if not answered(qid)]
     last = ss.step == PROFILE - 1
+    if last:
+        # Asked here, not on the profile page, so the name is saved before the PDF is made.
+        st.markdown("##### Your name on the profile")
+        a["display_name"] = st.text_input("Name to show on your profile (optional)", value=a.get("display_name", ""),
+                                          key="w_display_name", placeholder="e.g. Tan Ah Beng",
+                                          help="Leave blank to show 'Profile of Candidate'.")
+        st.write("")
     c1, c2 = st.columns(2)
     c1.button("Back", on_click=go, args=(ss.step - 1,))
     c2.button("See my profile" if last else "Next page", type="primary", disabled=bool(missing),
@@ -315,15 +344,15 @@ elif ss.step == PROFILE:
     skills = ss.chosen_skills + [s.strip() for s in a.get("other_skills", "").split(",") if s.strip()]
     sections = build_sections(a, cv, skills)
 
-    a["display_name"] = st.text_input("Name to show on your profile (optional)", value=a.get("display_name", ""),
-                                      key="w_display_name")
-    st.markdown(f"## {a['display_name'] or 'Candidate profile'}")
+    shown = (a.get("display_name") or "").strip() or "Candidate"
+    st.markdown(f"## Profile of {shown}")
+    st.caption("To change the name, click Edit answers below.")
     for heading, lines in sections:
         st.markdown(f"### {heading}")
         st.markdown("\n".join(f"- {line}" for line in lines))
 
     pdf = make_pdf(sections, a.get("display_name", ""))
-    fname = (a.get("display_name") or "my").strip().replace(" ", "_") + "_beyond_the_cv.pdf"
+    fname = "Profile_of_" + "_".join(shown.split()) + ".pdf"
     st.download_button("Download my one-page profile (PDF)", pdf, file_name=fname, mime="application/pdf", type="primary")
     st.caption("Your answers are not saved after you close this page. Download your profile first.")
 

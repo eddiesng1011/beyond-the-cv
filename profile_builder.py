@@ -93,6 +93,21 @@ def build_sections(a: dict, cv: dict, skills: list) -> list:
     return [(h, lines) for h, lines in sections if lines]
 
 
+def _fonts():
+    """Embed Liberation Sans so every PDF viewer shows the same text. Falls back to Helvetica."""
+    from pathlib import Path
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    here = Path(__file__).parent
+    try:
+        if "Body" not in pdfmetrics.getRegisteredFontNames():
+            pdfmetrics.registerFont(TTFont("Body", str(here / "LiberationSans-Regular.ttf")))
+            pdfmetrics.registerFont(TTFont("Body-Bold", str(here / "LiberationSans-Bold.ttf")))
+        return "Body", "Body-Bold"
+    except Exception:
+        return "Helvetica", "Helvetica-Bold"
+
+
 def make_pdf(sections: list, name: str = "") -> bytes:
     """One A4 page. Text shrinks to fit if a profile is unusually long."""
     from reportlab.lib import colors
@@ -103,15 +118,16 @@ def make_pdf(sections: list, name: str = "") -> bytes:
     from reportlab.pdfgen import canvas
     from xml.sax.saxutils import escape
 
+    REG, BOLD = _fonts()
     teal, amber, grey = colors.HexColor("#17414F"), colors.HexColor("#B5651D"), colors.HexColor("#6B7B83")
-    title = ParagraphStyle("t", fontName="Helvetica-Bold", fontSize=20, leading=24, textColor=teal)
-    sub = ParagraphStyle("s", fontName="Helvetica", fontSize=9.5, leading=12, textColor=grey)
-    head = ParagraphStyle("h", fontName="Helvetica-Bold", fontSize=11.5, leading=14, textColor=amber,
+    title = ParagraphStyle("t", fontName=BOLD, fontSize=20, leading=24, textColor=teal)
+    sub = ParagraphStyle("s", fontName=REG, fontSize=9.5, leading=12, textColor=grey)
+    head = ParagraphStyle("h", fontName=BOLD, fontSize=11.5, leading=14, textColor=amber,
                           spaceBefore=9, spaceAfter=3)
-    body = ParagraphStyle("b", fontName="Helvetica", fontSize=10, leading=13.2, leftIndent=9, bulletIndent=0,
+    body = ParagraphStyle("b", fontName=REG, bulletFontName=REG, fontSize=10, leading=13.2, leftIndent=9, bulletIndent=0,
                           spaceAfter=2.5)
 
-    story = [Paragraph(escape(name) if name else "Candidate profile", title),
+    story = [Paragraph("Profile of " + escape(name.strip() or "Candidate"), title),
              Paragraph("Beyond the CV: what my CV does not tell you. This profile accompanies my CV.", sub),
              Spacer(1, 4)]
     for h, lines in sections:
@@ -124,7 +140,7 @@ def make_pdf(sections: list, name: str = "") -> bytes:
     c.setTitle(f"{name or 'Candidate'} profile")
     frame = Frame(18 * mm, 16 * mm, W - 36 * mm, H - 30 * mm, showBoundary=0)
     frame.addFromList([KeepInFrame(W - 36 * mm, H - 32 * mm, story, mode="shrink")], c)
-    c.setFont("Helvetica", 8)
+    c.setFont(REG, 8)
     c.setFillColor(grey)
     c.drawString(18 * mm, 10 * mm, "All answers are the candidate's own. Prepared with Beyond the CV, a What's Next alumni prototype.")
     c.showPage()
