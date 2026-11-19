@@ -136,7 +136,7 @@ Q = {
         "options": {
             "Mainly within industries I know": "I would like to stay mainly in industries I know.",
             "In a related industry": "I am open to a related industry.",
-            "In a different industry where my skills are useful": "I am open to a different industry where my skills are useful.",
+            "I am open to a different industry where my skills are useful": "I am open to a different industry where my skills are useful.",
             "Open to any industry with suitable work": "I am open to any industry with suitable work.",
             "Not sure yet": None,
         },
