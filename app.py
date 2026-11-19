@@ -154,7 +154,13 @@ def answered(qid):
 
 
 # ---------- Header ----------
-st.title("Beyond the CV")
+BANNER = HERE / "banner.jpg"
+if ss.step == 0 and BANNER.exists():
+    # The banner already carries the title, so it replaces st.title on the first screen.
+    st.image(str(BANNER), width="stretch",
+             alt="Beyond the CV. Helping people over 50 show what they can contribute now.")
+else:
+    st.title("Beyond the CV")
 st.caption(f"Step {ss.step + 1} of {len(STEP_NAMES)}")
 st.progress((ss.step + 1) / len(STEP_NAMES))
 if QPAGE0 <= ss.step < PROFILE:
