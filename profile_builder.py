@@ -8,8 +8,10 @@ from questions import Q
 
 
 def _lc(s: str) -> str:
-    """Lower-case the first letter for use mid-sentence, unless it starts an acronym (e.g. AI)."""
+    """Lower-case the first letter for use mid-sentence, unless it starts an acronym (e.g. AI) or the word I."""
     if len(s) > 1 and s[1].isupper():
+        return s
+    if s == "I" or s.startswith(("I ", "I'")):
         return s
     return s[:1].lower() + s[1:]
 
@@ -27,7 +29,11 @@ def _multi(a, qid):
         return "I am open to discussing the work location."
     if qid == "location":
         items = [x for x in items if x != "Open to discussion"]
-    return f"{Q[qid]['lead']}: " + "; ".join(_lc(x) for x in items) + "."
+    # Options written as full sentences ("I would like to ...") stand on their own after the list.
+    said = [x.rstrip(".") + "." for x in items if x.startswith("I ")]
+    items = [x for x in items if not x.startswith("I ")]
+    out = f"{Q[qid]['lead']}: " + "; ".join(_lc(x) for x in items) + "." if items else ""
+    return " ".join([out] + said).strip()
 
 
 def _outside(a):
