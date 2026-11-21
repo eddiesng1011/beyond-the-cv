@@ -77,6 +77,47 @@ def go(n):
     ss.step = n
 
 
+# ---------- Test mode (for the project team only) ----------
+# Open the app with ?test=<TEST_CODE> on the end of the link. TEST_CODE lives in Streamlit Secrets.
+# Without the code, nothing here shows, so testers always go through every step.
+TEST_CODE = setting("TEST_CODE")
+if TEST_CODE and st.query_params.get("test") == TEST_CODE:
+    ss.test_mode = True
+
+
+def fill_sample():
+    """Load the sample CV (keyword matching, no AI cost) and fill every empty answer."""
+    if not ss.cv:
+        f = HERE / "samples" / "sample_cv.docx"
+        ss.cv = read_cv(f.name, f.read_bytes(), SKILLS, None)
+        ss.chosen_skills = list(ss.cv.get("skills", []))
+    ss.consent = True
+    ans = ss.answers
+    for qid, q in Q.items():
+        if q["kind"] == "special" or ans.get(qid):
+            continue
+        first = list(q["options"])[0]
+        ans[qid] = first if q["kind"] == "one" else [first]
+    for opt in ans.get("outside", []):
+        if opt in Q["outside"]["detail_hints"]:
+            ans.setdefault("outside_detail", {}).setdefault(opt, "Sample answer for testing")
+    ans.setdefault("display_name", "Test User")
+    for k in [k for k in ss.keys() if isinstance(k, str) and k.startswith("w_")]:
+        del ss[k]   # so every box shows the filled answers
+
+
+if ss.get("test_mode"):
+    with st.sidebar:
+        st.markdown("### Test mode")
+        st.caption("Only people with the test link see this.")
+        st.button("Fill sample answers", on_click=fill_sample, type="primary")
+        for n, name in enumerate(STEP_NAMES):
+            if QPAGE0 <= n < PROFILE:
+                nums = [Q[qid]["num"] for qid in PAGES[n - QPAGE0]["questions"]]
+                name = f"{name}: Q{min(nums)} to Q{max(nums)}"
+            st.button(f"Go to {name}", key=f"jump_{n}", on_click=go, args=(n,))
+
+
 # ---------- Scroll to top on every step change ----------
 ss.setdefault("_last_step", ss.step)
 ss.setdefault("_scroll_runs", 0)
