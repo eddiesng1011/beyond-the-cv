@@ -161,9 +161,12 @@ def ask_outside_details():
     for i, opt in enumerate(Q["outside"]["options"]):
         if opt not in a.get("outside", []) or opt not in hints:
             continue
-        label = "Something else: please describe" if opt.startswith("Something else") else f"{opt}: tell us more (optional)"
+        label = "Something else: please describe" if opt == OTHER else f"{opt}: tell us more"
         details[opt] = st.text_input(label, value=a.get("outside_detail", {}).get(opt, ""), key=f"w_outside_d_{i}",
                                      placeholder=hints[opt], max_chars=100)
+        if not has_words(details[opt]):
+            short = "Something else" if opt == OTHER else opt
+            st.caption(f"Please fill this in and press Enter, or untick {short}.")
     a["outside_detail"] = details
 
 
@@ -172,7 +175,19 @@ def answered(qid):
     if q.get("optional") or q["kind"] == "special":
         return True
     v = a.get(qid)
+    if qid == "outside":
+        # Every ticked option that opens a box needs a few words in it.
+        hints, detail = Q["outside"]["detail_hints"], a.get("outside_detail", {})
+        return bool(v) and all(has_words(detail.get(o)) for o in v if o in hints)
     return bool(v)
+
+
+OTHER = "Something else (please describe)"
+
+
+def has_words(text):
+    """True only if the text has at least one letter or number. Spaces and full stops do not count."""
+    return any(ch.isalnum() for ch in (text or ""))
 
 
 # ---------- Header ----------
