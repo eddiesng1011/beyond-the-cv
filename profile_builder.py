@@ -8,8 +8,10 @@ from questions import Q
 
 
 def _lc(s: str) -> str:
-    """Lower-case the first letter for use mid-sentence, unless it starts an acronym (e.g. AI)."""
+    """Lower-case the first letter for use mid-sentence, unless it starts an acronym (e.g. AI) or the word I."""
     if len(s) > 1 and s[1].isupper():
+        return s
+    if s == "I" or s.startswith(("I ", "I'")):
         return s
     return s[:1].lower() + s[1:]
 
@@ -27,7 +29,11 @@ def _multi(a, qid):
         return "I am open to discussing the work location."
     if qid == "location":
         items = [x for x in items if x != "Open to discussion"]
-    return f"{Q[qid]['lead']}: " + "; ".join(_lc(x) for x in items) + "."
+    # Options written as full sentences ("I would like to ...") stand on their own after the list.
+    said = [x.rstrip(".") + "." for x in items if x.startswith("I ")]
+    items = [x for x in items if not x.startswith("I ")]
+    out = f"{Q[qid]['lead']}: " + "; ".join(_lc(x) for x in items) + "." if items else ""
+    return " ".join([out] + said).strip()
 
 
 def _outside(a):
@@ -52,7 +58,7 @@ def build_sections(a: dict, cv: dict, skills: list) -> list:
     if step:
         s1.append(step + (f' In my words: "{a["step_back_text"]}"' if a.get("step_back_text") else ""))
     s1 += [x for x in (_one(a, "pay"), _multi(a, "arrangements"),
-                       _one(a, "days"), _one(a, "shifts"), _one(a, "schedule"), _one(a, "start"),
+                       _one(a, "days"), _one(a, "shifts"), _one(a, "schedule"), _one(a, "start"), _one(a, "stay"),
                        _multi(a, "location"), _one(a, "industry")) if x]
 
     s2 = [x for x in (_multi(a, "interests"), _multi(a, "responsibilities")) if x]
@@ -127,7 +133,7 @@ def make_pdf(sections: list, name: str = "") -> bytes:
     body = ParagraphStyle("b", fontName=REG, bulletFontName=REG, fontSize=10, leading=13.2, leftIndent=9, bulletIndent=0,
                           spaceAfter=2.5)
 
-    story = [Paragraph(escape(name) if name else "Candidate profile", title),
+    story = [Paragraph("Profile of " + escape(name.strip() or "Candidate"), title),
              Paragraph("Beyond the CV: what my CV does not tell you. This profile accompanies my CV.", sub),
              Spacer(1, 4)]
     for h, lines in sections:

@@ -9,7 +9,7 @@ lead: for "multi" questions, the label used in the profile.
 PAGES = [
     {"title": "Your direction", "questions": ["step_back", "interests", "activities", "strengths"]},
     {"title": "How you would like to work", "questions": ["responsibilities", "arrangements", "pay", "days", "shifts", "schedule"]},
-    {"title": "Practical details", "questions": ["start", "location", "industry", "ai"]},
+    {"title": "Practical details", "questions": ["start", "stay", "location", "industry", "ai"]},
     {"title": "Learning and motivation", "questions": ["learning", "learning_support", "outside", "motivation"]},
 ]
 
@@ -123,15 +123,27 @@ Q = {
             "I need three months or more": "I would need three months or more before starting.",
         },
     },
+    "stay": {
+        "num": 9, "category": "Time in the role", "kind": "one",
+        "label": "How long would you like to stay in your next role?",
+        "options": {
+            "As long as the role suits me": "I would like to stay as long as the role suits us both.",
+            "At least three years": "I plan to stay in my next role for at least three years.",
+            "One to three years": "I plan to stay in my next role for one to three years.",
+            "For a fixed project or contract period": "I am looking for a role for a fixed project or contract period.",
+            "Not sure yet": None,
+            "Prefer not to say": None,
+        },
+    },
     "location": {
-        "num": 9, "category": "Work location", "kind": "multi",
+        "num": 10, "category": "Work location", "kind": "multi",
         "label": "Which work locations would suit you? Select all that apply.",
         "options": ["At the employer's workplace", "Mainly from home", "A combination of home and workplace",
                     "Open to discussion"],
         "lead": "Work locations that suit me",
     },
     "industry": {
-        "num": 10, "category": "Industry openness", "kind": "one",
+        "num": 11, "category": "Industry openness", "kind": "one",
         "label": "In which industry would you consider working?",
         "options": {
             "Mainly within industries I know": "I would like to stay mainly in industries I know.",
@@ -142,7 +154,7 @@ Q = {
         },
     },
     "ai": {
-        "num": 11, "category": "AI learning", "kind": "one",
+        "num": 12, "category": "AI learning", "kind": "one",
         "label": "Have you used AI tools such as ChatGPT, Claude, Copilot, Gemini, DeepSeek, Kimi or any other generative AI tools?",
         "options": {
             "Yes, I use them regularly": "I use AI tools regularly.",
@@ -154,7 +166,7 @@ Q = {
         "text_when": ["Yes, I use them regularly", "Yes, I have tried them a few times"],
     },
     "learning": {
-        "num": 12, "category": "Learning", "kind": "multi",
+        "num": 13, "category": "Learning", "kind": "multi",
         "label": "What would you be comfortable learning for a suitable role? Select all that apply.",
         "options": ["New software or digital tools", "AI tools relevant to the work",
                     "Processes used by a different employer", "Knowledge about a new industry",
@@ -163,7 +175,7 @@ Q = {
         "lead": "I am comfortable learning",
     },
     "learning_support": {
-        "num": 12, "category": None, "kind": "multi", "optional": True,
+        "num": 13, "category": None, "kind": "multi", "optional": True,
         "label": "What helps you learn best? Select all that apply.",
         "options": ["Demonstration followed by practice", "Written instructions", "Short videos",
                     "A structured course", "Guidance from a colleague", "No particular preference"],
@@ -171,7 +183,7 @@ Q = {
         "skip_in_profile": ["No particular preference"],
     },
     "outside": {
-        "num": 13, "category": "Experience outside paid work", "kind": "multi",
+        "num": 14, "category": "Experience outside paid work", "kind": "multi",
         "label": "Where else have you developed skills that could be useful at work? Select all that apply.",
         "options": ["Volunteering", "Community or residents' activities", "Clubs, associations or committees",
                     "Teaching, tutoring or mentoring", "Organising events", "Caring for or supporting others",
@@ -193,7 +205,7 @@ Q = {
         },
     },
     "motivation": {
-        "num": 14, "category": "Motivation", "kind": "multi", "max": 3,
+        "num": 15, "category": "Motivation", "kind": "multi", "max": 3,
         "label": "What would make your next role worthwhile? Select up to three.",
         "options": ["Earning a regular income", "Using my experience and skills", "Doing work I enjoy",
                     "Staying active, engaged and connected", "Learning something new", "Helping others",
