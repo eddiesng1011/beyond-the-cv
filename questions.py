@@ -131,8 +131,8 @@ Q = {
             "At least three years": "I plan to stay in my next role for at least three years.",
             "One to three years": "I plan to stay in my next role for one to three years.",
             "For a fixed project or contract period": "I am looking for a role for a fixed project or contract period.",
+            "Happy to keep working past the retirement age": "I am happy to keep working past the retirement age if the role suits us both.",
             "Not sure yet": None,
-            "Prefer not to say": None,
         },
     },
     "location": {
