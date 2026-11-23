@@ -424,3 +424,10 @@ elif ss.step == PROFILE:
         st.divider()
         st.markdown(f"We value your feedback. If you have any, please email "
                     f"[{FEEDBACK}](mailto:{FEEDBACK}?subject=Beyond%20the%20CV%20feedback).")
+
+# ---------- Feedback line on every page before the profile ----------
+# The profile page has its own fuller message above, so it is skipped there.
+if FEEDBACK and ss.step != PROFILE:
+    st.write("")
+    st.caption(f"Questions or feedback? Email "
+               f"[{FEEDBACK}](mailto:{FEEDBACK}?subject=Beyond%20the%20CV%20feedback).")
