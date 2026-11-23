@@ -38,6 +38,7 @@ SKILLS = load_skills(HERE / "skills.csv")
 API_KEY = setting("ANTHROPIC_API_KEY")
 HOST = setting("HOST_NAME", "the Beyond the CV project team")
 CONTACT = setting("CONTACT_EMAIL")
+FEEDBACK = setting("FEEDBACK_EMAIL")   # shown at the foot of the profile page; kept in Secrets, not in the code
 
 QPAGE0 = 3                      # first question page
 PROFILE = QPAGE0 + len(PAGES)   # profile step
@@ -196,7 +197,7 @@ def ask_strengths():
 
 
 def ask_outside_details():
-    """One optional box under each ticked option in question 13."""
+    """One required box under each ticked option in question 14."""
     hints = Q["outside"]["detail_hints"]
     details = {}
     for i, opt in enumerate(Q["outside"]["options"]):
@@ -418,3 +419,8 @@ elif ss.step == PROFILE:
         for k in list(ss.keys()):
             del ss[k]
         st.rerun()
+
+    if FEEDBACK:
+        st.divider()
+        st.markdown(f"We value your feedback. If you have any, please email "
+                    f"[{FEEDBACK}](mailto:{FEEDBACK}?subject=Beyond%20the%20CV%20feedback).")
