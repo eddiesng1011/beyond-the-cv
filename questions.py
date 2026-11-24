@@ -127,9 +127,8 @@ Q = {
         "num": 9, "category": "Time in the role", "kind": "one",
         "label": "How long would you like to stay in your next role?",
         "options": {
-            "As long as the role suits me": "I would like to stay as long as the role suits us both.",
-            "At least three years": "I plan to stay in my next role for at least three years.",
-            "One to three years": "I plan to stay in my next role for one to three years.",
+            "No end date in mind for the right role": "I have no end date in mind, if the role is right for us both.",
+            "Less than three years": "I plan to stay in my next role for less than three years.",
             "For a fixed project or contract period": "I am looking for a role for a fixed project or contract period.",
             "Happy to keep working past the retirement age": "I am happy to keep working past the retirement age if the role suits us both.",
             "Not sure yet": None,
