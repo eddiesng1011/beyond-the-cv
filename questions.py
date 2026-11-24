@@ -125,7 +125,7 @@ Q = {
     },
     "stay": {
         "num": 9, "category": "Time in the role", "kind": "one",
-        "label": "How long would you like to stay in your next role?",
+        "label": "How long would you like to stay in your next role? Select one.",
         "options": {
             "No end date in mind for the right role": "I have no end date in mind, if the role is right for us both.",
             "Less than three years": "I plan to stay in my next role for less than three years.",
