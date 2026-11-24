@@ -447,6 +447,16 @@ elif ss.step == PROFILE:
             del ss[k]
         st.rerun()
 
+    st.divider()
+    st.markdown("#### What's next for Beyond the CV")
+    nxt = ("We are working on the next step. You will be able to upload a job description with your CV, "
+           "and get materials prepared for that specific role.")
+    if FEEDBACK:
+        nxt += (f" If this would help you, email us at "
+                f"[{FEEDBACK}](mailto:{FEEDBACK}?subject=Interested%20in%20the%20next%20step). "
+                "Your interest helps us decide what to build next.")
+    st.markdown(nxt)
+
     if FEEDBACK:
         st.divider()
         st.markdown(f"We value your feedback. If you have any, please email "
