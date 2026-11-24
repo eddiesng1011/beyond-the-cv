@@ -208,7 +208,7 @@ Q = {
         "num": 15, "category": "Motivation", "kind": "multi", "max": 3,
         "label": "What would make your next role worthwhile? Select up to three.",
         "options": ["Earning a regular income", "Using my experience and skills", "Doing work I enjoy",
-                    "Staying active, engaged and connected", "Learning something new", "Helping others",
+                    "A better work-life balance", "Staying active, engaged and connected", "Learning something new", "Helping others",
                     "Meeting people and working with a team", "Contributing to a cause or community",
                     "Building a longer-term career"],
         "lead": "What would make my next role worthwhile",
