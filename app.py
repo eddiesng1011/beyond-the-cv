@@ -240,7 +240,8 @@ STORY_TEXT = """At 58, I was retrenched. I had spent my whole working life in co
 over 30 years in logistics and supply chain. Then one day, it ended.
 
 The hardest question was not how to find a job. It was what I wanted to do next. \
-I had never really thought about it.
+I had never really thought about it. Whether you are let go or leave by choice, \
+you may face the same question.
 
 So I went back to learning. I joined the What's Next programme and reskilled at Republic Polytechnic. \
 I learned to work with AI tools, and I used them to build this app.
