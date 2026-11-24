@@ -40,9 +40,10 @@ HOST = setting("HOST_NAME", "the Beyond the CV project team")
 CONTACT = setting("CONTACT_EMAIL")
 FEEDBACK = setting("FEEDBACK_EMAIL")   # shown at the foot of the profile page; kept in Secrets, not in the code
 
-QPAGE0 = 3                      # first question page
+S_STORY, S_WELCOME, S_UPLOAD, S_SKILLS = 0, 1, 2, 3   # step numbers
+QPAGE0 = 4                      # first question page
 PROFILE = QPAGE0 + len(PAGES)   # profile step
-STEP_NAMES = ["Welcome", "Your CV", "Your skills"] + [f"Page {i + 1} of {len(PAGES)}" for i in range(len(PAGES))] + ["Your profile"]
+STEP_NAMES = ["My story", "Welcome", "Your CV", "Your skills"] + [f"Page {i + 1} of {len(PAGES)}" for i in range(len(PAGES))] + ["Your profile"]
 
 ss = st.session_state
 ss.setdefault("step", 0)
@@ -234,7 +235,23 @@ def has_words(text):
 
 # ---------- Header ----------
 BANNER = HERE / "banner.jpg"
-if ss.step == 0 and BANNER.exists():
+# Eddie's story, shown first. Edit the words here; keep sentences short.
+STORY_TEXT = """At 58, I was retrenched. I had spent my whole working life in corporations, \
+over 30 years in logistics and supply chain. Then one day, it ended.
+
+The hardest question was not how to find a job. It was what I wanted to do next. \
+I had never really thought about it.
+
+So I went back to learning. I joined the What's Next programme and reskilled at Republic Polytechnic. \
+I learned to work with AI tools, and I used them to build this app.
+
+What I learned is simple. My past did not have to limit me. \
+My experience was my strength, once I learned how to use it and repackage it. \
+But first, I had to know what I wanted. Only then could anyone help me find it.
+
+This app helps you think that through, in about 12 minutes. At the end, you will know what you now \
+want to be doing. You will also have a one-page profile to share with hirers."""
+if ss.step == S_STORY and BANNER.exists():
     # The banner already carries the title, so it replaces st.title on the first screen.
     st.image(str(BANNER), width="stretch",
              alt="Beyond the CV. Helping people over 50 show what they can contribute now.")
@@ -247,8 +264,15 @@ if QPAGE0 <= ss.step < PROFILE:
 if not API_KEY:
     st.info("Demo mode: skills are suggested by keyword matching. AI reading is switched off.")
 
-# ---------- Step 0: welcome and consent ----------
-if ss.step == 0:
+# ---------- Step 0: Eddie's story ----------
+if ss.step == S_STORY:
+    st.markdown("## What's next for me?")
+    st.markdown(STORY_TEXT)
+    st.caption("Eddie Sng, What's Next alumnus and builder of this app")
+    st.button("Next", on_click=go, args=(S_WELCOME,), type="primary")
+
+# ---------- Step 1: welcome and consent ----------
+elif ss.step == S_WELCOME:
     st.markdown("Your CV shows where you have been. It rarely shows what you would accept, "
                 "or what you want next. This tool helps you say both, in one page.")
     st.markdown("**How it works**\n\n1. Upload your CV, or your LinkedIn profile as a PDF.\n"
@@ -278,10 +302,12 @@ if ss.step == 0:
     agree = st.checkbox(f"I have read the above. I consent to {HOST} using my personal data in this way, "
                         "in line with the Personal Data Protection Act 2012.", value=ss.get("consent", False))
     ss.consent = agree
-    st.button("Start", disabled=not agree, on_click=go, args=(1,), type="primary")
+    c1, c2 = st.columns(2)
+    c1.button("Back", on_click=go, args=(S_STORY,), key="back_welcome")
+    c2.button("Start", disabled=not agree, on_click=go, args=(S_UPLOAD,), type="primary")
 
-# ---------- Step 1: upload ----------
-elif ss.step == 1:
+# ---------- Step 2: upload ----------
+elif ss.step == S_UPLOAD:
     if API_KEY:
         st.markdown("Upload your CV as a PDF or Word file. A scanned PDF is fine.")
     else:
@@ -307,17 +333,17 @@ elif ss.step == 1:
             try:
                 ss.cv = read_cv(name, data, SKILLS, API_KEY)
                 ss.chosen_skills = list(ss.cv.get("skills", []))
-                go(2)
+                go(S_SKILLS)
                 st.rerun()
             except Exception as e:
                 st.error("Sorry, we could not read that file. Please try a PDF or Word version.")
                 st.caption(f"Detail: {e}")
     if ss.cv:
-        st.button("Keep my earlier CV and continue", on_click=go, args=(2,))
-    st.button("Back", on_click=go, args=(0,))
+        st.button("Keep my earlier CV and continue", on_click=go, args=(S_SKILLS,))
+    st.button("Back", on_click=go, args=(S_WELCOME,))
 
-# ---------- Step 2: confirm skills ----------
-elif ss.step == 2:
+# ---------- Step 3: confirm skills ----------
+elif ss.step == S_SKILLS:
     cv = ss.cv or {}
     if cv.get("headline"):
         st.markdown(f"**In one line:** {cv['headline']}")
@@ -348,10 +374,10 @@ elif ss.step == 2:
             st.markdown(f"- {t}")
 
     c1, c2 = st.columns(2)
-    c1.button("Back", on_click=go, args=(1,))
-    c2.button("Next", type="primary", on_click=go, args=(3,))
+    c1.button("Back", on_click=go, args=(S_UPLOAD,))
+    c2.button("Next", type="primary", on_click=go, args=(QPAGE0,))
 
-# ---------- Steps 3 to 6: question pages ----------
+# ---------- Steps 4 to 7: question pages ----------
 elif QPAGE0 <= ss.step < PROFILE:
     page = PAGES[ss.step - QPAGE0]
     cv = ss.cv or {}
@@ -395,7 +421,7 @@ elif QPAGE0 <= ss.step < PROFILE:
         nums = ", ".join(str(n) for n in sorted(set(missing)))
         st.caption(f"Please answer question{'s' if len(set(missing)) > 1 else ''} {nums} to continue.")
 
-# ---------- Step 7: profile ----------
+# ---------- Step 8: profile ----------
 elif ss.step == PROFILE:
     cv = ss.cv or {}
     skills = ss.chosen_skills + [s.strip() for s in a.get("other_skills", "").split(",") if s.strip()]
