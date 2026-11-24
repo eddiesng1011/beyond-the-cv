@@ -183,7 +183,10 @@ def ask_text(qid):
         if not set(chosen) & set(q["text_when"]):
             return
     label, hint = q["text"]
-    a[f"{qid}_text"] = st.text_input(label, value=a.get(f"{qid}_text", ""), key=f"w_{qid}_text", placeholder=hint)
+    a[f"{qid}_text"] = st.text_input(label, value=a.get(f"{qid}_text", ""), key=f"w_{qid}_text", placeholder=hint,
+                                     max_chars=100 if q.get("text_required") else None)
+    if q.get("text_required") and not has_words(a[f"{qid}_text"]):
+        st.caption("Please fill this in and press Enter, or choose another option.")
 
 
 def ask_strengths():
@@ -222,6 +225,9 @@ def answered(qid):
         # Every ticked option that opens a box needs a few words in it.
         hints, detail = Q["outside"]["detail_hints"], a.get("outside_detail", {})
         return bool(v) and all(has_words(detail.get(o)) for o in v if o in hints)
+    if q.get("text_required") and v in q.get("text_when", []):
+        # "Something else" needs a description before moving on.
+        return has_words(a.get(f"{qid}_text"))
     return bool(v)
 
 

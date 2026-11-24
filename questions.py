@@ -133,7 +133,12 @@ Q = {
             "For a fixed project or contract period": "I am looking for a role for a fixed project or contract period.",
             "Happy to keep working past the retirement age": "I am happy to keep working past the retirement age if the role suits us both.",
             "Not sure yet": None,
+            "Something else (please describe)": None,
         },
+        "text": ("Please describe how long you would like to stay", "e.g. About two years, then I would like to travel"),
+        "text_when": ["Something else (please describe)"],
+        "text_required": True,
+        "text_lead": "How long I would like to stay",
     },
     "location": {
         "num": 10, "category": "Work location", "kind": "multi",

@@ -51,6 +51,15 @@ def _outside(a):
     return f"{Q['outside']['lead']}: " + "; ".join(parts) + "." if parts else None
 
 
+def _own_words(a, qid):
+    """For 'Something else' answers: the user's own description, in one sentence."""
+    q = Q[qid]
+    text = (a.get(f"{qid}_text") or "").strip().rstrip(".")
+    if a.get(qid) in q.get("text_when", []) and text and "text_lead" in q:
+        return f"{q['text_lead']}: {_lc(text)}."
+    return None
+
+
 def build_sections(a: dict, cv: dict, skills: list) -> list:
     """Return [(heading, [lines])]. Empty sections are dropped."""
     s1 = []
@@ -58,7 +67,7 @@ def build_sections(a: dict, cv: dict, skills: list) -> list:
     if step:
         s1.append(step + (f' In my words: "{a["step_back_text"]}"' if a.get("step_back_text") else ""))
     s1 += [x for x in (_one(a, "pay"), _multi(a, "arrangements"),
-                       _one(a, "days"), _one(a, "shifts"), _one(a, "schedule"), _one(a, "start"), _one(a, "stay"),
+                       _one(a, "days"), _one(a, "shifts"), _one(a, "schedule"), _one(a, "start"), _one(a, "stay") or _own_words(a, "stay"),
                        _multi(a, "location"), _one(a, "industry")) if x]
 
     s2 = [x for x in (_multi(a, "interests"), _multi(a, "responsibilities")) if x]
